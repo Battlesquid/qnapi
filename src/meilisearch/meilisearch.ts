@@ -10,7 +10,7 @@ export const search = async (query: string, options: SearchParams) => {
 }
 
 export const buildIndex = async () => {
-    const questions = await getAllQuestions();
+    const questions = await getAllQuestions(false);
     const index = client.index("question");
 
     await index.addDocuments(questions, { primaryKey: "id" });
@@ -32,9 +32,9 @@ export const updateIndex = async (fullUpdate: boolean) => {
 
     if (fullUpdate) {
         const season = await getActiveSeason();
-        questions = await getQuestions([season]);
+        questions = await getQuestions([season], false);
     } else {
-        questions = await getUnansweredQuestions();
+        questions = await getUnansweredQuestions(false);
     }
 
     return index.addDocuments(questions);

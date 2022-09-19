@@ -10,4 +10,6 @@ const app = express();
 app.use("/q", questionRouter);
 app.use("/search", searchRouter);
 
-app.listen(process.env.QNAPI_PORT, () => console.info("server started."));
+app.listen(process.env.QNAPI_PORT, () => {
+    console.log(`Server started on http://localhost:${process.env.QNAPI_PORT}`)
+});
