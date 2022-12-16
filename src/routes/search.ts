@@ -1,16 +1,9 @@
+import { getDefaults } from './../util/constants';
 import { fromYYYYMMDD } from './../util/date';
 import express, { Request } from "express";
 import { check, validationResult } from 'express-validator';
 import { search } from "../meilisearch/meilisearch";
 import FilterBuilder from "../meilisearch/FilterBuilder";
-import {
-    AFTER_DEFAULT,
-    BEFORE_DEFAULT,
-    PAGE_DEFAULT,
-    PER_PAGE_DEFAULT,
-    PROGRAM_DEFAULT,
-    SEASON_DEFAULT
-} from '../util/constants';
 
 type SearchParams = {
     search_query: string
@@ -46,7 +39,7 @@ searchRouter.get("/",
     check("after").optional().isDate(),
     check("answered").optional().isBoolean(),
     check("page").optional().isInt(),
-    check("per_page").optional().isInt(),
+    check("per_page").optional().isIn(["10", "20", "50"]),
     async (req: Request<{}, {}, {}, SearchParams>, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -55,15 +48,16 @@ searchRouter.get("/",
                 .json({ errors: errors.array() });
         }
 
+        const defaults = await getDefaults()
         const search_query = req.query.search_query ?? "";
-        const program = req.query.program ?? PROGRAM_DEFAULT;
-        const season = req.query.season ?? SEASON_DEFAULT;
+        const program = req.query.program ?? defaults.program;
+        const season = req.query.season ?? defaults.season;
         const author = req.query.author ?? "";
-        const before = req.query.before ?? BEFORE_DEFAULT(new Date(Date.now()));
-        const after = req.query.after ?? AFTER_DEFAULT;
+        const before = req.query.before ?? defaults.before(new Date(Date.now()));
+        const after = req.query.after ?? defaults.after;
         const answered = req.query.answered ?? "";
-        const page = parseInt(req.query.page ?? PAGE_DEFAULT);
-        const per_page = parseInt(req.query.per_page ?? PER_PAGE_DEFAULT);
+        const page = parseInt(req.query.page ?? defaults.page);
+        const per_page = parseInt(req.query.per_page ?? defaults.perPage);
 
         const programs = Array.isArray(program)
             ? program
@@ -80,11 +74,20 @@ searchRouter.get("/",
 
         const results = await search(search_query, {
             filter,
-            offset: page * per_page,
-            limit: per_page
+            page,
+            hitsPerPage: per_page
         });
 
-        res.status(200).send(results);
+        const response = {
+            meta: {
+                prev_page: Math.max(results.page! - 1, 1),
+                next_page: Math.min(results.page! + 1, results.totalPages!),
+                last_page: results.totalPages!
+            },
+            data: results.hits
+        }
+
+        res.status(200).send(response);
     })
 
 export default searchRouter;

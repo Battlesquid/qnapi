@@ -29,7 +29,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-validator": "^6.14.0",
-    "meilisearch": "^0.25.1",
+    "meilisearch": "^0.30.0",
     "vex-qna-archiver": "^2.3.1"
   },
   "devDependencies": {

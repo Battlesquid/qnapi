@@ -15,10 +15,10 @@ questionRouter.get("/:id",
         }
 
         const results = await search("", { filter: [`id = ${req.params.id}`] });
-        if(results.nbHits === 0) {
+        if(results.hits.length === 0) {
             return res.status(404).end();
         }
-        res.status(200).send(results);
+        res.status(200).send(results.hits[0]);
     })
 
 export default questionRouter;
