@@ -21,7 +21,7 @@ export const indexExists = async () => {
 }
 
 export const buildIndex = async () => {
-    const questions = await getAllQuestions(false);
+    const questions = await getAllQuestions(true);
     const index = client.index("question");
 
     await index.addDocuments(questions, { primaryKey: "id" });
