@@ -2,7 +2,8 @@ import { MeiliSearch, SearchParams } from 'meilisearch';
 import { getActiveSeason, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
 
 const client = new MeiliSearch({
-    host: process.env.MEILI_HOST!
+    host: process.env.MEILI_HOST!,
+    apiKey: process.env.MEILI_MASTER_KEY
 })
 
 export const search = async (query: string, options: SearchParams) => {

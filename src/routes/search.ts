@@ -1,4 +1,4 @@
-import { getDefaults } from './../util/constants';
+import { PER_PAGE_LIMITS, getDefaults } from './../util/constants';
 import { fromYYYYMMDD } from './../util/date';
 import express, { Request } from "express";
 import { check, validationResult } from 'express-validator';
@@ -15,7 +15,7 @@ type SearchParams = {
     tags?: string[]
     answered?: string
     page?: string
-    per_page?: string
+    limit?: string
 }
 
 const searchRouter = express.Router();
@@ -39,7 +39,7 @@ searchRouter.get("/",
     check("after").optional().isDate(),
     check("answered").optional().isBoolean(),
     check("page").optional().isInt(),
-    check("per_page").optional().isIn(["10", "20", "50"]),
+    check("per_page").optional().isIn(PER_PAGE_LIMITS),
     async (req: Request<{}, {}, {}, SearchParams>, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -48,7 +48,7 @@ searchRouter.get("/",
                 .json({ errors: errors.array() });
         }
 
-        const defaults = await getDefaults()
+        const defaults = await getDefaults();
         const search_query = req.query.search_query ?? "";
         const program = req.query.program ?? defaults.program;
         const season = req.query.season ?? defaults.season;
@@ -56,8 +56,8 @@ searchRouter.get("/",
         const before = req.query.before ?? defaults.before(new Date(Date.now()));
         const after = req.query.after ?? defaults.after;
         const answered = req.query.answered ?? "";
-        const page = parseInt(req.query.page ?? defaults.page);
-        const per_page = parseInt(req.query.per_page ?? defaults.perPage);
+        const page = Math.max(parseInt(req.query.page ?? defaults.page), parseInt(defaults.page));
+        const limit = Math.max(parseInt(req.query.limit ?? defaults.limit), parseInt(defaults.limit));
 
         const programs = Array.isArray(program)
             ? program
@@ -74,20 +74,14 @@ searchRouter.get("/",
 
         const results = await search(search_query, {
             filter,
-            page,
-            hitsPerPage: per_page
+            limit: limit + 1,
+            offset: limit * (page - 1)
         });
 
-        const response = {
-            meta: {
-                prev_page: Math.max(results.page! - 1, 1),
-                next_page: Math.min(results.page! + 1, results.totalPages!),
-                last_page: results.totalPages!
-            },
-            data: results.hits
-        }
-
-        res.status(200).send(response);
+        res.status(200).send({
+            data: results.hits,
+            next: results.hits.length === limit + 1
+        });
     })
 
 export default searchRouter;

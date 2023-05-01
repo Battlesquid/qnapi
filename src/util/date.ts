@@ -1,10 +1,8 @@
 export const toYYYYMMDD = (date: Date) => {
     const year = date.getFullYear();
-    const month = date.getMonth();
-    const monthPadding = month < 10 ? "0" : "";
-    const day = date.getDate();
-    const dayPadding = day < 10 ? "0" : "";
-    return `${year}-${monthPadding}${month}-${dayPadding}${day}`;
+    const month = date.getMonth().toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
 export const fromYYYYMMDD = (date: string) => {
