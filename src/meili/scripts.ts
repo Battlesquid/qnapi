@@ -1,7 +1,7 @@
 import { config } from "dotenv"
 config();
 
-import { buildIndex, updateIndex, clearIndex } from './meilisearch';
+import { buildIndex, updateIndex, clearIndex } from '.';
 
 const args = process.argv.slice(2);
 switch (args[0]) {

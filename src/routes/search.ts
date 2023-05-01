@@ -2,8 +2,8 @@ import { PER_PAGE_LIMITS, getDefaults } from './../util/constants';
 import { fromYYYYMMDD } from './../util/date';
 import express, { Request } from "express";
 import { check, validationResult } from 'express-validator';
-import { search } from "../meilisearch/meilisearch";
-import FilterBuilder from "../meilisearch/FilterBuilder";
+import { search } from "../meili";
+import { FilterBuilder } from "../meili";
 
 type SearchParams = {
     search_query: string

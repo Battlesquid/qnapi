@@ -1,13 +1,23 @@
 import { MeiliSearch, SearchParams } from 'meilisearch';
 import { getActiveSeason, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
 
+console.log(process.env.MEILI_MASTER_KEY)
 const client = new MeiliSearch({
     host: process.env.MEILI_HOST!,
-    apiKey: process.env.MEILI_MASTER_KEY
+    apiKey: process.env.MEILI_MASTER_KEY!
 })
 
 export const search = async (query: string, options: SearchParams) => {
     return client.index("question").search(query, options);
+}
+
+export const indexExists = async () => {
+    try {
+        await client.index("question").getRawInfo();
+        return true;
+    } catch(e) {
+        return false;
+    }
 }
 
 export const buildIndex = async () => {
@@ -45,3 +55,5 @@ export const clearIndex = async () => {
     const index = client.index("question");
     return index.deleteAllDocuments();
 }
+
+export * from "./FilterBuilder"

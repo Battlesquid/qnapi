@@ -1,6 +1,6 @@
 import express from "express";
 import { check, validationResult } from "express-validator";
-import { search } from "../meilisearch/meilisearch";
+import { search } from "../meili";
 
 const questionRouter = express.Router();
 

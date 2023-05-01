@@ -1,4 +1,4 @@
-export default class FilterBuilder {
+export class FilterBuilder {
     private programs!: string[];
     private season!: string;
     private author!: string;
