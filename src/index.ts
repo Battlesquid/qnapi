@@ -13,8 +13,7 @@ app.use("/q", questionRouter);
 app.use("/search", searchRouter);
 
 
-app.listen(process.env.PORT, async () => {
-    console.log(`server started on port ${process.env.PORT}`);
+const start = async () => {
     const exists = await indexExists();
     if (!exists) {
         console.log("Index not found, building.")
@@ -25,10 +24,15 @@ app.listen(process.env.PORT, async () => {
         await updateIndex(true);
         console.log("Finished updating index.");
     }
-});
+    app.listen(process.env.PORT, async () => {
+        console.log(`server started on port ${process.env.PORT}`);
+    });
+    schedule("0 */4 * * *", async () => {
+        console.log("Starting index update.");
+        await updateIndex(true);
+        console.log("Finished index update.")
+    });
+}
 
-schedule("0 */4 * * *", async () => {
-    console.log("Starting index update.");
-    await updateIndex(true);
-    console.log("Finished index update.")
-});
+start();
+
