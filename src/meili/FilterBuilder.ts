@@ -38,7 +38,7 @@ export class FilterBuilder {
 
     build() {
         const filters = [
-            this.programs.map(p => `category = ${p}`),
+            this.programs.map(p => `program = ${p}`),
             `season = ${this.season}`,
             `timestamp_ms < ${this.before}`,
             `timestamp_ms > ${this.after}`

@@ -7,13 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./dist/index.js",
     "build": "npx tsc",
-    "buildrun": "npm run build && npm run start",
-    "cleanbuild": "rm -rf ./dist && npm run build",
-    "meili": "node ./dist/meilisearch/scripts",
-    "meili_build": "npm run meili -- build",
-    "meili_update": "npm run meili -- update",
-    "meili_update_full": "npm run meili -- update_full",
-    "meili_clear": "npm run meili -- clear"
+    "buildrun": "yarn build && yarn start",
+    "cleanbuild": "rm -rf ./dist && yarn build",
+    "meili": "node ./dist/meili/scripts",
+    "meili_build": "yarn meili build",
+    "meili_update": "yarn meili update",
+    "meili_update_full": "yarn meili update_full",
+    "meili_clear": "yarn meili clear"
   },
   "repository": {
     "type": "git",

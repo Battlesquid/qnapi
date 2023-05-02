@@ -1,7 +1,6 @@
 import { MeiliSearch, SearchParams } from 'meilisearch';
 import { getActiveSeason, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
 
-console.log(process.env.MEILI_MASTER_KEY)
 const client = new MeiliSearch({
     host: process.env.MEILI_HOST!,
     apiKey: process.env.MEILI_MASTER_KEY!
@@ -15,20 +14,20 @@ export const indexExists = async () => {
     try {
         await client.index("question").getRawInfo();
         return true;
-    } catch(e) {
+    } catch (e) {
         return false;
     }
 }
 
 export const buildIndex = async () => {
-    const questions = await getAllQuestions(true);
+    const questions = await getAllQuestions(false);
     const index = client.index("question");
 
     await index.addDocuments(questions, { primaryKey: "id" });
     index.updateFilterableAttributes([
         "id",
         "author",
-        "category",
+        "program",
         "answered",
         "season",
         "timestamp_ms",
