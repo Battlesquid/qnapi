@@ -1,18 +1,29 @@
 import { MeiliSearch, SearchParams } from 'meilisearch';
-import { getActiveSeason, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
+import { Question, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
 
-const client = new MeiliSearch({
-    host: process.env.MEILI_HOST!,
-    apiKey: process.env.MEILI_MASTER_KEY!
-})
+let client: MeiliSearch | null = null;
+
+const getClient = () => {
+    if (client === null) {
+        client = new MeiliSearch({
+            host: process.env.MEILI_HOST!,
+            apiKey: process.env.MEILI_MASTER_KEY!
+        });
+    }
+    return client;
+}
+
+const getQuestionIndex = () => {
+    return getClient().index<Question>("question");
+}
 
 export const search = async (query: string, options: SearchParams) => {
-    return client.index("question").search(query, options);
+    return getQuestionIndex().search(query, options);
 }
 
 export const indexExists = async () => {
     try {
-        await client.index("question").getRawInfo();
+        await getQuestionIndex().getRawInfo();
         return true;
     } catch (e) {
         return false;
@@ -20,11 +31,11 @@ export const indexExists = async () => {
 }
 
 export const buildIndex = async () => {
-    const questions = await getAllQuestions(false);
-    const index = client.index("question");
+    const questions = await getAllQuestions();
+    const index = getQuestionIndex();
 
     await index.addDocuments(questions, { primaryKey: "id" });
-    index.updateFilterableAttributes([
+    return index.updateFilterableAttributes([
         "id",
         "author",
         "program",
@@ -37,22 +48,15 @@ export const buildIndex = async () => {
 }
 
 export const updateIndex = async (fullUpdate: boolean) => {
-    const index = client.index("question");
-    let questions;
+    const questions = fullUpdate
+        ? await getQuestions()
+        : await getUnansweredQuestions();
 
-    if (fullUpdate) {
-        const season = await getActiveSeason();
-        questions = await getQuestions([season], false);
-    } else {
-        questions = await getUnansweredQuestions(false);
-    }
-
-    return index.addDocuments(questions);
+    return getQuestionIndex().addDocuments(questions);
 }
 
-export const clearIndex = async () => {
-    const index = client.index("question");
-    return index.deleteAllDocuments();
+export const clearIndex = () => {
+    return getQuestionIndex().deleteAllDocuments();
 }
 
-export * from "./FilterBuilder"
+export * from "./FilterBuilder";

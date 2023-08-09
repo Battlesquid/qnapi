@@ -1,19 +1,18 @@
-import { config } from "dotenv"
+import { config } from "dotenv";
 config();
 
 import express from 'express';
-import questionRouter from './routes/question';
-import searchRouter from './routes/search';
-import { buildIndex, indexExists, updateIndex } from "./meili";
 import { schedule } from "node-cron";
+import { buildApplication } from "./application";
+import { buildIndex, indexExists, updateIndex } from "./meili";
 
 const app = express();
 
-app.use("/q", questionRouter);
-app.use("/search", searchRouter);
+
 
 
 const start = async () => {
+    buildApplication(app);
     const exists = await indexExists();
     if (!exists) {
         console.log("Index not found, building.")

@@ -1,5 +1,5 @@
 import { PER_PAGE_LIMITS, getDefaults } from './../util/constants';
-import { fromYYYYMMDD } from './../util/date';
+import { fromYYYYMMDD } from './../utils';
 import express, { Request } from "express";
 import { check, validationResult } from 'express-validator';
 import { search } from "../meili";

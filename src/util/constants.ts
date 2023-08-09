@@ -1,10 +1,10 @@
-import { getActiveSeason } from 'vex-qna-archiver';
-import { toYYYYMMDD } from "./date";
+import { fetchCurrentSeason } from 'vex-qna-archiver';
+import { toYYYYMMDD } from "../utils";
 
 export const PER_PAGE_LIMITS = ["10", "20", "50"];
 
 export const getDefaults = async () => {
-    const season =  await getActiveSeason();
+    const season = await fetchCurrentSeason();
     return {
         program: ["VRC"],
         season,
