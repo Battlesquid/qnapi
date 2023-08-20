@@ -1,13 +1,14 @@
 import { MeiliSearch, SearchParams } from 'meilisearch';
 import { Question, getAllQuestions, getQuestions, getUnansweredQuestions } from 'vex-qna-archiver';
+import config from '../config';
 
 let client: MeiliSearch | null = null;
 
 const getClient = () => {
     if (client === null) {
         client = new MeiliSearch({
-            host: process.env.MEILI_HOST!,
-            apiKey: process.env.MEILI_MASTER_KEY!
+            host: config("MEILI_HOST"),
+            apiKey: config("MEILI_MASTER_KEY")
         });
     }
     return client;

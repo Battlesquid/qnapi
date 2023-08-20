@@ -4,6 +4,7 @@ import express, { Request } from "express";
 import { check, validationResult } from 'express-validator';
 import { search } from "../meili";
 import { FilterBuilder } from "../meili";
+import { makeEndpoint } from '@zodios/core';
 
 type SearchParams = {
     search_query: string
@@ -19,6 +20,13 @@ type SearchParams = {
 }
 
 const searchRouter = express.Router();
+
+export const searchQuestion = makeEndpoint({
+    method: "get",
+    path: "/search",
+    description: "Get a question by its ID",
+    response: questionSchema
+})
 
 searchRouter.get("/",
     check("search_query").optional(),
